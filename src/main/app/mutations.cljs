@@ -1,12 +1,9 @@
 (ns app.mutations
-  (:require [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]))
+  (:require [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
+            [com.fulcrologic.fulcro.algorithms.merge :as merge]))
 
 (defmutation delete-person
-  [{:keys [list-name name]}]
+  [{list-id :list/id
+    person-id :person/id}]
   (action [{:keys [state]}]
-    (let [path (if (= "Friends" list-name)
-                 [:friends :list/people]
-                 [:enemies :list/people])
-          old-list (get-in @state path)
-          new-list (vec (filter #(not= (:person/name %) name) old-list))]
-         (swap! state assoc-in path new-list))))
+    (swap! state merge/remove-ident* [:person/id person-id] [:list/id list-id :list/people])))
