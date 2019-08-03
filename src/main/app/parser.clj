@@ -3,9 +3,10 @@
       [com.wsscode.pathom.core :as p]
       [com.wsscode.pathom.connect :as pc]
       [taoensso.timbre :as log]
-      [app.resolvers]))
+      [app.resolvers]
+      [app.mutations]))
 
-(def resolvers [app.resolvers/resolvers])
+(def resolvers [app.resolvers/resolvers app.mutations/mutations])
 
 (def pathom-parser
   (p/parser {::p/env {::p/reader [p/map-reader
