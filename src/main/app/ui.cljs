@@ -20,17 +20,6 @@
 (def ui-person (comp/factory Person {:keyfn :person/id}))
 
 (defsc PersonList [this {:person-list/keys [id label people] :as props}]
-  {:query [:person-list/id :person-list/label {:person-list/people (comp/get-query Person)}]
-   :ident (fn [] [:person-list/id (:person-list/id props)])}
-  (let [delete-person (fn [person-id] (comp/transact! this [(api/delete-person {:person-list/id id :person/id person-id})]))]
-    (dom/div
-      (dom/h4 label)
-      (dom/ul
-        (map (fn [p] (ui-person (comp/computed p {:onDelete delete-person}))) people)))))
-
-(def ui-person-list (comp/factory PersonList))
-
-(defsc PeoplePage [this {:person-list/keys [id label people] :as props}]
        {:query         [:person-list/id :person-list/label {:person-list/people (comp/get-query Person)}]
         :ident         :person-list/id
         :route-segment ["list" :person-list/id]
@@ -76,7 +65,7 @@
     (dom/div (str "age: " age))))
 
 (defrouter Router [this props]
-  {:router-targets [Welcome PeoplePage PersonShow]})
+  {:router-targets [Welcome PersonList PersonShow]})
 
 (def ui-router (comp/factory Router))
 
