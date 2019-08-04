@@ -19,10 +19,10 @@
 
 (def ui-person (comp/factory Person {:keyfn :person/id}))
 
-(defsc PersonList [this {:list/keys [id label people] :as props}]
-  {:query [:list/id :list/label {:list/people (comp/get-query Person)}]
-   :ident (fn [] [:list/id (:list/id props)])}
-  (let [delete-person (fn [person-id] (comp/transact! this [(api/delete-person {:list/id id :person/id person-id})]))]
+(defsc PersonList [this {:person-list/keys [id label people] :as props}]
+  {:query [:person-list/id :person-list/label {:person-list/people (comp/get-query Person)}]
+   :ident (fn [] [:person-list/id (:person-list/id props)])}
+  (let [delete-person (fn [person-id] (comp/transact! this [(api/delete-person {:person-list/id id :person/id person-id})]))]
     (dom/div
       (dom/h4 label)
       (dom/ul
@@ -30,19 +30,19 @@
 
 (def ui-person-list (comp/factory PersonList))
 
-(defsc PeoplePage [this {:list/keys [id label people] :as props}]
-       {:query         [:list/id :list/label {:list/people (comp/get-query Person)}]
-        :ident         :list/id
-        :route-segment ["list" :list/id]
-        ;:will-enter (fn [_ {:list/keys [id]}]
-        ;              (dr/route-immediate [:list/id (keyword id)]))}
-        :will-enter    (fn [app {:list/keys [id]}]
+(defsc PeoplePage [this {:person-list/keys [id label people] :as props}]
+       {:query         [:person-list/id :person-list/label {:person-list/people (comp/get-query Person)}]
+        :ident         :person-list/id
+        :route-segment ["list" :person-list/id]
+        ;:will-enter (fn [_ {:person-list/keys [id]}]
+        ;              (dr/route-immediate [:person-list/id (keyword id)]))}
+        :will-enter    (fn [app {:person-list/keys [id]}]
                          (let [id (keyword id)]
-                           (dr/route-deferred [:list/id id]
-                             #(df/load app [:list/id id] PersonList
+                           (dr/route-deferred [:person-list/id id]
+                             #(df/load app [:person-list/id id] PersonList
                                        {:post-mutation `dr/target-ready
-                                        :post-mutation-params {:target [:list/id id]}}))))}
-  (let [delete-person (fn [person-id] (comp/transact! this [(api/delete-person {:list/id id :person/id person-id})]))]
+                                        :post-mutation-params {:target [:person-list/id id]}}))))}
+  (let [delete-person (fn [person-id] (comp/transact! this [(api/delete-person {:person-list/id id :person/id person-id})]))]
     (dom/div
       (dom/div
         (dom/h4 label)

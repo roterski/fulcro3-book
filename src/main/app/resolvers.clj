@@ -12,12 +12,12 @@
 
 (def list-table
   (atom
-    {:friends {:list/id     :friends
-               :list/label  "Friends"
-               :list/people [1 2]}
-     :enemies {:list/id     :enemies
-               :list/label  "Enemies"
-               :list/people [4 3]}}))
+    {:friends {:person-list/id     :friends
+               :person-list/label  "Friends"
+               :person-list/people [1 2]}
+     :enemies {:person-list/id     :enemies
+               :person-list/label  "Enemies"
+               :person-list/people [4 3]}}))
 
 ;; Given :person/id, this can generate the details of a person
 (pc/defresolver person-resolver [env {:person/keys [id]}]
@@ -25,22 +25,22 @@
    ::pc/output [:person/name :person/age]}
   (get @people-table id))
 
-;; Given a :list/id, this can generate a list label and the people
+;; Given a :person-list/id, this can generate a list label and the people
 ;; in that list (but just with their IDs)
-(pc/defresolver list-resolver [env {:list/keys [id]}]
-  {::pc/input  #{:list/id}
-   ::pc/output [:list/label {:list/people [:person/id]}]}
+(pc/defresolver list-resolver [env {:person-list/keys [id]}]
+  {::pc/input  #{:person-list/id}
+   ::pc/output [:person-list/label {:person-list/people [:person/id]}]}
   (when-let [list (get @list-table id)]
     (assoc list
-      :list/people (mapv (fn [id] {:person/id id}) (:list/people list)))))
+      :person-list/people (mapv (fn [id] {:person/id id}) (:person-list/people list)))))
 
 (pc/defresolver friends-resolver [env input]
-  {::pc/output [{:friends [:list/id]}]}
-  {:friends {:list/id :friends}})
+  {::pc/output [{:friends [:person-list/id]}]}
+  {:friends {:person-list/id :friends}})
 
 (pc/defresolver enemies-resolver [env input]
-  {::pc/output [{:enemies [:list/id]}]}
-  {:enemies {:list/id :enemies}})
+  {::pc/output [{:enemies [:person-list/id]}]}
+  {:enemies {:person-list/id :enemies}})
 
 
 (def resolvers [person-resolver list-resolver friends-resolver enemies-resolver])
