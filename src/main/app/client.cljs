@@ -9,8 +9,8 @@
       "Shadow-cljs sets this up to be our entry-point function. See shadow-cljs.edn `:init-fn` in the modules of the main build."
       []
       (app/mount! app ui/Root "app")
-      (df/load! app :friends ui/PersonList)
-      (df/load! app :enemies ui/PersonList)
+      ;(df/load! app :friends ui/PersonList)
+      ;(df/load! app :enemies ui/PersonList)
       (js/console.log "Loaded"))
 
 (defn ^:export refresh

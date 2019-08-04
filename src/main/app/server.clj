@@ -24,7 +24,7 @@
 (defonce stop-fn (atom nil))
 
 (defn start []
-      (reset! stop-fn (http/run-server middleware {:port 3000})))
+      (reset! stop-fn (http/run-server middleware {:port 3001})))
 
 (defn stop []
       (when @stop-fn
