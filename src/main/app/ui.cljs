@@ -9,6 +9,41 @@
     [taoensso.timbre :as log]
     [app.mutations :as api]))
 
+
+(defn make-comment
+  "Make a comment data map with optional children."
+  [id name children]
+  (cond-> {:db/id id :comment/name name}
+    children (assoc :comment/children children)))
+
+(declare ui-comment)
+
+; The ... in the query means there will be children of the same type, of arbitrary depth
+; it is equivalent to (comp/get-query Comment), but calling get query on yourself would
+; lead to infinite compiler recursion.
+(defsc Comment [this {:keys [:comment/name :comment/children]}]
+  {:query         (fn [] [:db/id :comment/name
+                          {:comment/children '...}
+                          ])
+   :initial-state (fn [p]
+                    (make-comment 1 "Joe"
+                      [(make-comment 2 "Suzy" [])
+                       (make-comment 3 "Billy" [])
+                       (make-comment 4 "Rae"
+                         [(make-comment 5 "Ian"
+                            [(make-comment 6 "Zoe" [])])])]))
+   :ident         [:comment/id :db/id]}
+  (dom/div
+    (dom/h4 name)
+    (when (seq children)
+      (dom/div
+        (dom/ul
+          (map (fn [p]
+                 (ui-comment p))
+            children))))))
+
+(def ui-comment (comp/factory Comment {:keyfn :db/id}))
+
 (defsc Person [this {:person/keys [id name age] :as props} {:keys [onDelete]}]
   {:query [:person/id :person/name :person/age]
    :ident (fn [] [:person/id (:person/id props)])}
@@ -38,15 +73,17 @@
         (dom/ul
           (map (fn [p] (ui-person (comp/computed p {:onDelete delete-person}))) people))))))
 
-(defsc Welcome [this props]
-  {:query         []
-   :initial-state {}
+
+(defsc Welcome [this {:keys [comments]}]
+  {:query         [{:comments (comp/get-query Comment)}]
+   :initial-state {:comments {}}
    :ident         (fn [] [:component/id :main])
    :route-segment ["home"]
    :will-enter    (fn [_ _] (dr/route-immediate [:component/id :main]))}
   (dom/div :.ui.container.segment
     (dom/h3 "Home")
-    (dom/p "Hello there!")))
+    (dom/p "Hello there!")
+    (ui-comment comments)))
 
 (defsc PersonShow [this {:person/keys  [id name age]}]
   {:query           [:person/id :person/name :person/age]
