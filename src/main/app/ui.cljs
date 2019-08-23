@@ -22,9 +22,7 @@
 ; it is equivalent to (comp/get-query Comment), but calling get query on yourself would
 ; lead to infinite compiler recursion.
 (defsc Comment [this {:keys [:comment/name :comment/children]}]
-  {:query         (fn [] [:db/id :comment/name
-                          {:comment/children '...}
-                          ])
+  {:query         (fn [] [:db/id :comment/name {:comment/children '...}])
    :initial-state (fn [p]
                     (make-comment 1 "Joe"
                       [(make-comment 2 "Suzy" [])
